@@ -59,7 +59,7 @@
 						$filename = str_replace('resized_','',$filename);
 					}
 				}
-			$image = slideshow_filetidy($filename);
+			$image = $filename;
 			$captions[$image] = slideshow_caption_array($slideshow->id,$image);
 			}
         }

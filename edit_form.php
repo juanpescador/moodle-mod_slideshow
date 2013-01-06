@@ -2,20 +2,19 @@
 require_once($CFG->libdir.'/formslib.php');
 class mod_slideshow_edit_form extends moodleform {
     function definition() {
-        global $CFG;
+        global $CFG, $DB;
         
         $mform = $this->_form;
         $captions = $this->_customdata['captions'];
         $htmledit = $this->_customdata['htmledit'];
         $context = $this->_customdata['context'];
         $slideshowid = $this->_customdata['slideshowid'];
-        
-        
+                       
 				$imagenum = 1;
 				$thumbnail_path = slideshow_get_thumbnail_path($context);
 				
 				foreach ($captions as $caption) {
-					$mform->addElement('header', 'header', '<img src="'.$thumbnail_path["base"].$caption["image"].'.'.$thumbnail_path["extension"].'"> ('.$caption['image'].'.'.$thumbnail_path["extension"].')');
+                                        $mform->addElement('header', 'header', '&nbsp;<img style="vertical-align: middle;" src="'.$thumbnail_path["base"].$caption['image'].'"> '.$caption['image'].'&nbsp;');
 					$mform->addElement('text', 'title'.$imagenum, get_string('title', 'slideshow',$caption['image']));
 					$mform->setType('title'.$imagenum, PARAM_RAW);
 					$mform->setDefault('title'.$imagenum, $caption['title']);
@@ -51,11 +50,11 @@ class mod_slideshow_comment_form extends moodleform {
 			$context = $this->_customdata['context'];
 			$slideshowid = $this->_customdata['slideshowid'];
 			$slidenumber = $this->_customdata['slidenumber'];
-			$img_filename = $this->_customdata['imgfilename'];
-
+			$filename = $this->_customdata['filename'];
+                                               
 			$thumbnail_path = slideshow_get_thumbnail_path($context);
 		        
-			$mform->addElement('header', 'header', '<img src="'.$thumbnail_path["base"].$img_filename.'.'.$thumbnail_path["extension"].'"> ('.$img_filename.'.'.$thumbnail_path["extension"].')');
+			$mform->addElement('header', 'header', '&nbsp;<img style="vertical-align: middle;" src="'.$thumbnail_path["base"].$filename.'">&nbsp;&nbsp;&nbsp;'.get_string('number', 'slideshow').' '.($slidenumber+1).'&nbsp;&nbsp;&nbsp;'.$filename.'&nbsp;');
 			if ($htmledit) {
 				$mform->addElement('editor', 'slidecomment', get_string('comment', 'slideshow'));
 				$mform->setType('comment', PARAM_RAW);
@@ -87,18 +86,18 @@ class mod_slideshow_media_form extends moodleform {
 			$context = $this->_customdata['context'];
 			$slideshowid = $this->_customdata['slideshowid'];
 			$slidenumber = $this->_customdata['slidenumber'];
-			$img_filename = $this->_customdata['imgfilename'];
 			$media = $this->_customdata['media'];
-
-			$thumbnail_path = slideshow_get_thumbnail_path($context);
+                        $filename = optional_param('filename','',PARAM_FILE);
+                        
+                        $thumbnail_path = slideshow_get_thumbnail_path($context);
 			// FIXME Naïve way to get path to the full-size slide.
 			$thumbnail_path["base"] = str_replace("thumb_", "resized_", $thumbnail_path["base"]);
 
-			$mform->addElement('header', 'header', '('.$img_filename.'.'.$thumbnail_path["extension"].')');
+			$mform->addElement('header', 'header', '&nbsp;'.get_string('number', 'slideshow').' '.($slidenumber+1).'&nbsp;&nbsp;&nbsp;'.$filename.'&nbsp;');
 
 			$slide_width = $CFG->slideshow_maxwidth;
 			$slide_height = $CFG->slideshow_maxheight;
-			$img_html = '<div id="slide" style="background-image: url(\''.$thumbnail_path["base"].$img_filename.'.'.$thumbnail_path["extension"].'\'); width: ' . $slide_width . 'px; height:' . $slide_height . 'px;"><span id="media_outline" style="border: 1px solid #000; padding: 20px; margin-top: 20px; display: block; width: 400px; height: 300px; background: #B5D045; cursor: hand; cursor: pointer;">' . get_string('media_edit_position', 'slideshow') . '</span></div>';
+			$img_html = '<div id="slide" style="background-image: url(\''.$thumbnail_path["base"].$filename.'\'); width: ' . $slide_width . 'px; height:' . $slide_height . 'px;  background-repeat:no-repeat;"><span id="media_outline" style="border: 1px solid #000; padding: 20px; margin-top: 20px; display: block; width: 400px; height: 300px; background: #B5D045; cursor: hand; cursor: pointer;">' . get_string('media_edit_position', 'slideshow') . '</span></div>';
 			$mform->addElement('html', $img_html); 
 
 
