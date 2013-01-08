@@ -41,43 +41,15 @@
 			
 		/// Print the main part of the page
 		if($slideshow->commentsallowed) {
-			$img_count = 0;
-                        $img_filenames = array();
-			if(has_capability('moodle/course:update',$coursecontext)){
-				$conditions = array('contextid'=>$context->id, 'component'=>'mod_slideshow','filearea'=>'content','itemid'=>0);
-				$file_records =  $DB->get_records('files', $conditions);
-				$captions = array();
-				foreach ($file_records as $filerecord) {
-					$filename = $filerecord->filename;
-					if ( preg_match("#\.jpe?g$#i", $filename) || preg_match("#\.gif$#i", $filename) || preg_match("#\.png$#i", $filename)) {
-						if (preg_match("#^thumb_?#i", $filename)) {
-							continue;
-						}
-						if (preg_match("#^resized_#i", $filename)) {
-							if ($slideshow->keeporiginals) {
-								continue;
-							}else{
-								$filename = str_replace('resized_','',$filename);
-							}
-						}
-                                                $img_filenames[] = $filename;
-										}
-				}
-				sort($img_filenames);
-                               
-				// Display the actual form.
+			
+			     // Display the actual form.
 				require_once('edit_form.php');
 				echo $OUTPUT->heading(get_string('comment_add', 'slideshow'));
 				echo get_string('comment_instructions', 'slideshow');
-				$htmledit = isset($slideshow->htmlcaptions) ? $slideshow->htmlcaptions:0;
-				
-                                $img_filename = pathinfo($img_filenames[$img_num], PATHINFO_FILENAME);
-                                
+				$htmledit = isset($slideshow->htmlcaptions) ? $slideshow->htmlcaptions:0;				                                                           
 				$mform = new mod_slideshow_comment_form('comments.php', array('htmledit' => $htmledit, 'context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num));
                                 $mform->display();
-			} else {
-				echo get_string('noauth','slideshow','');
-			}
+			
 		} else {
 			echo get_string('comments_not_allowed', 'slideshow');
 		}
