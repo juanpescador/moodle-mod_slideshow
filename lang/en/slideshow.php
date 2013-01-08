@@ -70,7 +70,7 @@ $string['media_edit_y'] = 'Y position';
 $string['media_edit_width'] = 'Width';
 $string['media_edit_height'] = 'Height';
 $string['media_edit_position'] = 'Drag this box to the desired position for your media';
- 
+$string['media_noauth'] = "You don't have the permission to add/edit media for this slide"; 
 // for config.html
 $string['configmaxbytes'] = 'Largest filesize permissible (Kb) before the image is resized and saved';
 $string['configmaxwidth'] = 'Maximum width for images (pixels)';
