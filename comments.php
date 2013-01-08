@@ -8,8 +8,7 @@
     $id       = optional_param('id',0,PARAM_INT);
     $a        = optional_param('a',0,PARAM_INT);
     $img_num  = optional_param('img_num',0,PARAM_INT);
-    $filename = optional_param('filename','',PARAM_FILE);
-    
+        
     if ($a) {  // Two ways to specify the module
         $slideshow = $DB->get_record('slideshow', array('id'=>$a), '*', MUST_EXIST);
         $cm = get_coursemodule_from_instance('slideshow', $slideshow->id, $slideshow->course, false, MUST_EXIST);
@@ -43,6 +42,7 @@
 		/// Print the main part of the page
 		if($slideshow->commentsallowed) {
 			$img_count = 0;
+                        $img_filenames = array();
 			if(has_capability('moodle/course:update',$coursecontext)){
 				$conditions = array('contextid'=>$context->id, 'component'=>'mod_slideshow','filearea'=>'content','itemid'=>0);
 				$file_records =  $DB->get_records('files', $conditions);
@@ -60,20 +60,21 @@
 								$filename = str_replace('resized_','',$filename);
 							}
 						}
-						$image = slideshow_filetidy($filename);
-						$captions[$image] = slideshow_caption_array($slideshow->id,$image);
-					}
+                                                $img_filenames[] = $filename;
+										}
 				}
-				sort($captions);
-
+				sort($img_filenames);
+                               
 				// Display the actual form.
 				require_once('edit_form.php');
 				echo $OUTPUT->heading(get_string('comment_add', 'slideshow'));
 				echo get_string('comment_instructions', 'slideshow');
 				$htmledit = isset($slideshow->htmlcaptions) ? $slideshow->htmlcaptions:0;
-				$img_filename = pathinfo($filename, PATHINFO_FILENAME);
-				$mform = new mod_slideshow_comment_form('comments.php', array('htmledit' => $htmledit, 'context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num, 'imgfilename' => $img_filename, 'filename' => $filename));
-				$mform->display();
+				
+                                $img_filename = pathinfo($img_filenames[$img_num], PATHINFO_FILENAME);
+                                
+				$mform = new mod_slideshow_comment_form('comments.php', array('htmledit' => $htmledit, 'context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num));
+                                $mform->display();
 			} else {
 				echo get_string('noauth','slideshow','');
 			}
