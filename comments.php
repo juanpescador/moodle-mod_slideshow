@@ -8,6 +8,7 @@
     $id       = optional_param('id',0,PARAM_INT);
     $a        = optional_param('a',0,PARAM_INT);
     $img_num  = optional_param('img_num',0,PARAM_INT);
+    $filename = optional_param('filename','',PARAM_FILE);
         
     if ($a) {  // Two ways to specify the module
         $slideshow = $DB->get_record('slideshow', array('id'=>$a), '*', MUST_EXIST);
@@ -47,7 +48,7 @@
 				echo $OUTPUT->heading(get_string('comment_add', 'slideshow'));
 				echo get_string('comment_instructions', 'slideshow');
 				$htmledit = isset($slideshow->htmlcaptions) ? $slideshow->htmlcaptions:0;				                                                           
-				$mform = new mod_slideshow_comment_form('comments.php', array('htmledit' => $htmledit, 'context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num));
+				$mform = new mod_slideshow_comment_form('comments.php', array('htmledit' => $htmledit, 'context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num, 'filename' => $filename));
                                 $mform->display();
 			
 		} else {
