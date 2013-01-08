@@ -172,7 +172,15 @@
             $captions['image'] = $image;
             $captions['title'] = $caption->title;
             $captions['caption'] = $caption->caption;
-        } else {
+        }
+        //necessary if you have old slideshows of moodle 2
+        elseif($caption = $DB->get_record_select('slideshow_captions', 'slideshow = '. $id . ' AND image = "'.  substr($image, 0, -strlen(strrchr($image, "."))).'"')) {
+            $captions['image'] = $image;
+            $captions['title'] = $caption->title;
+            $captions['caption'] = $caption->caption;    
+        }
+        // END MV
+        else {
             $captions['image'] = $image;
             $captions['title'] = '';
             $captions['caption'] = '';
