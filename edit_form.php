@@ -50,7 +50,7 @@ class mod_slideshow_comment_form extends moodleform {
 			$context = $this->_customdata['context'];
 			$slideshowid = $this->_customdata['slideshowid'];
 			$slidenumber = $this->_customdata['slidenumber'];
-			$filename = optional_param('filename','',PARAM_FILE);                       
+			$filename = $this->_customdata['filename'];                       
 			$thumbnail_path = slideshow_get_thumbnail_path($context);
 		        
 			$mform->addElement('header', 'header', '&nbsp;<img style="vertical-align: middle;" src="'.$thumbnail_path["base"].$filename.'">&nbsp;&nbsp;&nbsp;'.get_string('number', 'slideshow').' '.($slidenumber+1).'&nbsp;&nbsp;&nbsp;'.$filename.'&nbsp;');
@@ -86,7 +86,7 @@ class mod_slideshow_media_form extends moodleform {
 			$slideshowid = $this->_customdata['slideshowid'];
 			$slidenumber = $this->_customdata['slidenumber'];
 			$media = $this->_customdata['media'];
-                        $filename = optional_param('filename','',PARAM_FILE);
+                        $filename = $this->_customdata['filename'];
                         
                         $thumbnail_path = slideshow_get_thumbnail_path($context);
 			// FIXME Naïve way to get path to the full-size slide.
