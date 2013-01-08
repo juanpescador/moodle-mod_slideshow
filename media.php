@@ -67,7 +67,7 @@
 			echo $OUTPUT->heading(get_string('media_add', 'slideshow'));
 			echo get_string('media_instructions', 'slideshow');
 			$media = slideshow_slide_get_media($slideshow->id, $img_num);
-			$mform = new mod_slideshow_media_form('media.php', array('context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num, 'media' => $media));
+			$mform = new mod_slideshow_media_form('media.php', array('context' => $context, 'slideshowid' => $slideshow->id, 'slidenumber' => $img_num, 'filename' => $filename, 'media' => $media));
 			$mform->display();
 	} else {
 		echo get_string('media_noauth','slideshow','');
