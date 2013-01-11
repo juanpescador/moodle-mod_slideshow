@@ -107,15 +107,16 @@
 /// Print the main part of the page
     slideshow_secure_script($CFG->slideshow_securepix); // prints javascript ("open image in new window" also conditional on $CFG->slideshow_securepix)
     $conditions = array('contextid'=>$context->id, 'component'=>'mod_slideshow','filearea'=>'content','itemid'=>0);
-    $file_records =  $DB->get_records('files', $conditions);
+    $file_records = $DB->get_records('files', $conditions);
     $fs = get_file_storage();
     $files = array();
     $thumbs = array();
-    $resized =  array();
+    $resized = array();
     $showdir = '/';
+    
     foreach ($file_records as $file_record) {
         // check only image files
-        if (  preg_match("/\.jpe?g$/i", $file_record->filename) || preg_match("/\.gif$/i", $file_record->filename) || preg_match("/\.png$/i", $file_record->filename)) {
+        if ( preg_match("/\.jpe?g$/i", $file_record->filename) || preg_match("/\.gif$/i", $file_record->filename) || preg_match("/\.png$/i", $file_record->filename)) {
             $showdir = $file_record->filepath;
             if (preg_match("/^thumb_?/i", $file_record->filename)) {
                 $filename = str_replace('thumb_','',$file_record->filename);
@@ -141,7 +142,7 @@
     $error = '';
     foreach ($files as $filename => $file) {
         // OK, let's look at the pictures in the folder ...
-        //  iterate and process images 
+        // iterate and process images
         if (in_array($filename, $thumbs) || in_array($filename, $resized)) {
             continue; // done those already
         }
@@ -208,11 +209,11 @@
             slideshow_display_thumbs($filearray);
         }
         // process caption text
-        $currentimage = slideshow_filetidy($filearray[$img_num]);
+        $currentimage = $filearray[$img_num];
         $caption_array[$currentimage] = slideshow_caption_array($slideshow->id,$currentimage);
             
         if (isset($caption_array[$currentimage])){
-            $captionstring =  $caption_array[$currentimage]['caption'];
+            $captionstring = $caption_array[$currentimage]['caption'];
             $titlestring = $caption_array[$currentimage]['title'];
         } else {
             $captionstring = $currentimage;
@@ -228,13 +229,16 @@
 				}
 
         // display main picture, with link to next page and plain text for alt and title tags
-				echo "<div id=\"slide\" style=\"position: absolute; z-index: 10; width: $CFG->slideshow_maxwidth; height: $CFG->slideshow_maxheight;\">";
-				// The lr parameter overrides the last read position, in case the user reaches the end of the slideshow and wants to see the first slide.
+	echo "<div id=\"slide\" style=\"position: absolute; z-index: 10; width: $CFG->slideshow_maxwidth; height: $CFG->slideshow_maxheight;\">";
+	// The lr parameter overrides the last read position, in case the user reaches the end of the slideshow and wants to see the first slide.
         echo '<a name="pic" href="?id='.($cm->id).'&img_num='.fmod($img_num+1,$img_count).'&autoshow='.$autoshow.'&lr=0">';
         echo '<img src="'.$baseurl.'resized_'.$filearray[$img_num].'" alt="'.$filearray[$img_num]
             .'" title="'.$filearray[$img_num].'" style="z-index: 1">';
         echo "</a></div>";
  
+        // necessary for the tumbs of the comments page and the media page
+        $filename = $filearray[$img_num];
+        
 				// If there is media on this slide overlay it over the slide.
 				if($media = slideshow_slide_get_media($slideshow->id, $img_num)) {
 					$top = $media->y;
@@ -282,7 +286,7 @@
             }
             if (has_capability('moodle/course:update',$context)){
                 echo '<li><a href="captions.php?id='.$cm->id.'">'.get_string('edit_captions', 'slideshow').'</a></li>';
-								echo '<li><a href="media.php?id=' . $cm->id . '&img_num=' . $img_num . '">' . get_string('media_add', 'slideshow') . '</a></li>';
+		echo '<li><a href="media.php?id=' . $cm->id . '&img_num=' . $img_num . '&filename=' . $filename .  '">' . get_string('media_add', 'slideshow') . '</a></li>';
             }
 						echo '</ul>';
         } else {
@@ -347,16 +351,15 @@
 												$commentcolor = FALSE;
 										}
 											echo '</div>'	
-						?>	
-										
-									
-								
-<?php				endforeach;
+?>	
+<?php				                          endforeach;
 						}
 
 						//echo '</ul>';
-						echo '<center><br><a href="comments.php?id=' . $cm->id . '&img_num=' . $img_num . '" class="commentButton">' . get_string('comment_add', 'slideshow') . '</a></center>';
-						echo '<br></div>';						}
+						echo '<center><br><a href="comments.php?id=' . $cm->id . '&img_num=' . $img_num . '&filename=' . $filename . '" class="commentButton">' . get_string('comment_add', 'slideshow') . '</a></center>';
+						echo '<br></div>';
+                                                
+                                        }
 				}
 
     } else {

@@ -8,6 +8,7 @@ Open-Source Software course.
   * alan.whittamore@castlecollege.ac.uk
   * Paul Vaughan (https://github.com/vaughany)
   * Los tres mosqueteros for an Open-Source Software class
+  * Michael Veit (https://github.com/375michael40veit)
 
 ## Installation ##
 Clone the repository, rename the folder from `moodle-mod_slideshow` to `slideshow`. Place it in `moodle/mod/`

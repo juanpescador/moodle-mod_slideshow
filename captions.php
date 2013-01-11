@@ -49,17 +49,17 @@
 		foreach ($file_records as $filerecord) {
 			$filename = $filerecord->filename;
 			if ( preg_match("#\.jpe?g$#i", $filename) || preg_match("#\.gif$#i", $filename) || preg_match("#\.png$#i", $filename)) {
-				if (preg_match("#^thumb_?#i", $filename)) {
+				if (preg_match("#^thumb_?#", $filename)) {
 					continue;
 				}
-				if (preg_match("#^resized_#i", $filename)) {
+				if (preg_match("#^resized_#", $filename)) {
 					if ($slideshow->keeporiginals) {
 						continue;
 					}else{
 						$filename = str_replace('resized_','',$filename);
 					}
 				}
-			$image = slideshow_filetidy($filename);
+			$image = $filename;
 			$captions[$image] = slideshow_caption_array($slideshow->id,$image);
 			}
         }

@@ -4,7 +4,7 @@
 $string['modulename'] = 'Slideshow';
 $string['pluginname'] = 'Slideshow';
 $string['modulenameplural'] = 'Slideshows';
-$string['pluginadministration'] = 'Admin';
+$string['pluginadministration'] = 'Slideshow-Adminstration';
 $string['slideshowsfound'] = 'Slideshows in course {$a}';
 
 // for mod.html
@@ -36,6 +36,7 @@ $string['edit_captions'] = 'Edit captions';
 $string['original_exists'] = 'Original already exists in ';
 $string['original_moved'] = 'Original moved to ';
 $string['original_deleted'] = 'Original deleted.';
+
 // for captions.php
 $string['captiontext'] = 'You can enter quite a large amount of text and html in the caption fields. <p>To make your captions permanent, you must use the &quot;Save&quot; button which is near the bottom of the page.';
 $string['captionedit'] = 'Editing captions';
@@ -57,6 +58,7 @@ $string['comments_not_allowed'] = 'Comments are disabled for this slideshow.';
 
 // for media
 $string['media'] = 'Media';
+$string['number'] = 'No.';
 $string['media_add'] = 'Add/edit media for this slide';
 $string['media_instructions'] = 'Paste the URL to a Youtube or Vimeo video in the URL box. You can specify height and width and also drag the video box for position.';
 $string['media_header'] = 'Media';
@@ -68,7 +70,7 @@ $string['media_edit_y'] = 'Y position';
 $string['media_edit_width'] = 'Width';
 $string['media_edit_height'] = 'Height';
 $string['media_edit_position'] = 'Drag this box to the desired position for your media';
- 
+$string['media_noauth'] = "You don't have the permission to add/edit media for this slide"; 
 // for config.html
 $string['configmaxbytes'] = 'Largest filesize permissible (Kb) before the image is resized and saved';
 $string['configmaxwidth'] = 'Maximum width for images (pixels)';
