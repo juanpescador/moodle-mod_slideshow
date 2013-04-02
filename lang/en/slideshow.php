@@ -75,4 +75,6 @@ $string['configmaxwidth'] = 'Maximum width for images (pixels)';
 $string['configmaxheight'] = 'Maximum height for images (pixels)';
 $string['keeporiginals'] = 'Keep originals?<br />If yes, the original image will be shown for printing. If no, only the resized version of the image is kept and server space is maximised.';
 $string['securepix'] = 'This will include javascript to prevent easy saving of the image and remove the direct link.';
+$string['usejavascript'] = 'Use javascript to change the slide. This will make slideshow faster but it will not work if browser has javascript disabled.';
+$string['scaleonsmallscreen'] = 'Automatically resize slides to feet small screens like mobile phones or tablets';
 ?>
