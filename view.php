@@ -46,12 +46,19 @@
 			slideshow_save_last_position($slideshow, $USER, $img_num, $lastreadconditions);
 		}
 
-/// Print header.
+	if($_REQUEST['save_position']) die("OK");
+	$use_js = $CFG->slideshow_usejavascript;
+	/// Print header.
     $PAGE->set_url('/mod/slideshow/view.php',array('id' => $cm->id));
 		$PAGE->set_title(get_string('pluginname', 'mod_slideshow') . ': ' . $slideshow->name);
     $PAGE->set_button($OUTPUT->update_module_button($cm->id, 'slideshow'));
     if ($autoshow) { // auto progress of images, no crumb trail
-			echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>' . $slideshow->name . '</title></head><body>';
+			echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>' . $slideshow->name . '</title>';
+			if($use_js) {
+				echo '<script type="text/javascript" src="http://yui.yahooapis.com/combo?3.5.1/build/yui/yui.js"></script>
+				<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.9.0/build/yahoo/yahoo.js&amp;2.9.0/build/dom/dom.js"></script>';
+			}
+			echo '</head><body>';
         $slideshow->layout = 9; //layout 9 prevents thumbnails being created
         if (!$pause){
             if(!($autodelay = $slideshow->delaytime)>0) {     // set seconds wait for auto popup progress
@@ -187,18 +194,228 @@
         
     sort($filearray);
 
-    if ($slideshow->centred){
-			$container_width = $CFG->slideshow_maxwidth;
-			// Add space for second column if comments are allowed or if captions are displayed to the right.
-			if($slideshow->commentsallowed || $slideshow->filename == 3) {
-				$container_width += 320;
-			}
-			echo '<div style="width: ' . $container_width . 'px; margin: 0px auto;">';
-		}
+	
+	$container_width = $CFG->slideshow_maxwidth;
+	// Add space for second column if comments are allowed or if captions are displayed to the right.
+	if($slideshow->commentsallowed || $slideshow->filename == 3) {
+		$container_width += 320;
+	}
+	$margin_string = "margin: " . ($CFG->slideshow_maxheight + 20) . "px 0 0 0;";
+	// If captions are displayed below image the margin has already been taken care by the caption paragraph.
+	if($slideshow->filename == 2) {
+		$margin_string = "margin: 0 0 0 0;";
+	}
 
-		echo '<div style="width: ' . $CFG->slideshow_maxwidth . 'px; float: left;">';
+?>
+	<style>
+		#slide {
+			width: <?php echo $CFG->slideshow_maxwidth; ?>; 
+			height: <?php echo $CFG->slideshow_maxheight; ?>;
+		}
+		#slide a img {
+			margin-left: -15px;
+		}
+		#slideshowmain {
+			width: <?php echo $container_width; ?>px;
+			margin: 0px auto;
+			height: 300px;
+		}
+		#slideshowcenter {
+			width: <?php echo $CFG->slideshow_maxwidth; ?>px;
+			float: left;
+		}
+		#previous {
+			width: <?php echo $CFG->slideshow_maxwidth/2; ?>px;
+			position: absolute; 
+			z-index: 11; 
+			vertical-align:middle; 
+			color:white; 
+			display:block;
+			float:right;
+			margin-left:0px; 
+			height: <?php echo $CFG->slideshow_maxheight ?>px;
+			/*height: 30%;*/
+		}
+		#slideshowul {
+			text-align:left; 
+			list-style: none;
+			<? echo $margin_string; ?> 
+			width: 100%;		
+		}
+</style>
+
+<?php
+	if($use_js) 
+	{
+		echo '<img id="preloadimg" style="display:none" src="'.$baseurl.'resized_'.$filearray[$img_num+1].'">';
+		$img_array = '"'.$baseurl.'resized_'.implode('",'."\n".'"'.$baseurl.'resized_',$filearray).'"';
+?>
+<script type="text/javascript">
+	var images = new Array(<?php echo $img_array ?>);
+	var current_slide = <?php echo $img_num; ?>;
+	var total_slides = <?php echo $img_count; ?>;
+<?php if($autoshow) { ?>	
+	var myInterval = setTimeout(next_slide, <?php echo $autodelay; ?>000);
+<?php } ?>	
+	function next_slide()
+	{
+		if(current_slide<total_slides)
+		{
+<?php if($autoshow) { ?>	
+			clearTimeout(myInterval);
+<?php } ?>	
+			YUI().use('node-load', function (Y) {
+				Y.one("#slideimg").set('src',images[++current_slide]);
+				Y.one("#preloadimg").set('src',images[current_slide+1]);
+				Y.io('http://cursuri.nextbyte.ro/mod/slideshow/view.php', {
+				    method: 'GET',
+				    data: 'id=<?php echo $cm->id; ?>&img_num='+current_slide+'&lr=0&save_position=1',
+				});
+			});
+<?php if($autoshow) { ?>	
+			myInterval = setTimeout(next_slide, <?php echo $autodelay; ?>000);
+<?php } ?>	
+		}
+	}
+	
+	function prev_slide()
+	{
+		if(current_slide>0)
+		{
+<?php if($autoshow) { ?>	
+			clearTimeout(myInterval);
+<?php } ?>	
+			YUI().use('node-load', function (Y) {
+				current_slide--;
+				Y.one("#slideimg").set('src',images[current_slide]);
+				Y.io('http://cursuri.nextbyte.ro/mod/slideshow/view.php', {
+				    method: 'GET',
+				    data: 'id=<?php echo $cm->id; ?>&img_num='+current_slide+'&lr=0&save_position=1',
+				});
+			});
+<?php if($autoshow) { ?>	
+			myInterval = setTimeout(next_slide, <?php echo $autodelay; ?>000);
+<?php } ?>	
+		}
+	}
+</script>
+<?php
+	}
+	if (!$autoshow && $CFG->slideshow_scaleonsmallscreen){
+?>
+	<style>
+		@media all and (min-width: 481px) and (max-width: 1024px) {
+			#slide a img {
+				margin-left: -40px;
+			}
+			#slideshowul {
+				margin: 370px 0 0 0;
+			}
+			#slideimg {
+				width: 480px;
+			}
+			#previous {
+				width: 240px;
+				height: 360px;
+			}
+			#previous img {
+				width: 240px;
+				height: 360px;
+			}
+			#slide {
+				width: 480px;
+				height: 360px;
+			}
+			#slideshowmain {
+				width: 480px;
+			}
+			#slideshowcenter {
+				width: 480px;
+				height: 360px;
+			}
+		}
+		
+		@media all and (max-width: 480px) {
+			#slideshowul {
+				margin: 250px 0 0 0;
+			}
+			#slideimg {
+				width: 320px;
+			}
+			#previous {
+				width: 160px;
+				height: 240px;
+			}
+			#previous img {
+				width: 160px;
+				height: 240px;
+			}
+			#slide {
+				width: 320px;
+				height: 240px;
+			}
+			#slideshowmain {
+				width: 320px;
+			}
+			#slideshowcenter {
+				width: 320px;
+				height: 240px;
+			}
+		}
+		@media all and (max-height: 360px) {
+			#slideshowul {
+				margin: 250px 0 0 0;
+			}
+			#slideimg {
+				width: 320px;
+			}
+			#previous {
+				width: 160px;
+				height: 240px;
+			}
+			#previous img {
+				width: 160px;
+				height: 240px;
+			}
+			#slide {
+				width: 320px;
+				height: 240px;
+			}
+			#slideshowmain {
+				width: 320px;
+			}
+			#slideshowcenter {
+				width: 320px;
+				height: 240px;
+			}
+		}
+	</style>
+<?
+	}
+    if ($slideshow->centred){
+		$container_width = $CFG->slideshow_maxwidth;
+		// Add space for second column if comments are allowed or if captions are displayed to the right.
+		if($slideshow->commentsallowed || $slideshow->filename == 3) {
+			$container_width += 320;
+		}
+		echo '<div id="slideshowmain">';
+	}
 		
     if($img_count) {
+		
+	    echo "<div id=\"previous\">";
+		if($img_num>0) {
+			if($use_js) {
+	        	echo '<a name="pic" href="#" onclick="prev_slide();">';
+			}
+			else
+			{
+		        echo '<a href="?id='.($cm->id).'&img_num='.fmod($img_num-1,$img_count).'&autoshow='.$autoshow.'&lr=0">';
+			}
+	        echo '<img src="/mod/slideshow/pix/previous.png" style="z-index: 1">';
+	        echo "</a></div>";
+			echo '<div id="slideshowcenter">';
+		}
         //
         // $slideshow->layout defines thumbnail position - 1 is on top, 2 is bottom
         // $slideshow->filename defines the position of captions. 1 is on top, 2 is bottom, 3 is on the right
@@ -228,10 +445,15 @@
 				}
 
         // display main picture, with link to next page and plain text for alt and title tags
-				echo "<div id=\"slide\" style=\"position: absolute; z-index: 10; width: $CFG->slideshow_maxwidth; height: $CFG->slideshow_maxheight;\">";
+				echo "<div id=\"slide\" style=\"position: absolute; z-index: 10; \">";
 				// The lr parameter overrides the last read position, in case the user reaches the end of the slideshow and wants to see the first slide.
-        echo '<a name="pic" href="?id='.($cm->id).'&img_num='.fmod($img_num+1,$img_count).'&autoshow='.$autoshow.'&lr=0">';
-        echo '<img src="'.$baseurl.'resized_'.$filearray[$img_num].'" alt="'.$filearray[$img_num]
+		if($use_js) {
+        	echo '<a name="pic" href="#" onclick="next_slide();">';
+		}
+		else {
+			echo '<a name="pic" href="?id='.($cm->id).'&img_num='.fmod($img_num+1,$img_count).'&autoshow='.$autoshow.'&lr=0">';
+		}
+        echo '<img id="slideimg" src="'.$baseurl.'resized_'.$filearray[$img_num].'" alt="'.$filearray[$img_num]
             .'" title="'.$filearray[$img_num].'" style="z-index: 1">';
         echo "</a></div>";
  
@@ -268,7 +490,7 @@
 						if($slideshow->filename == 2) {
 							$margin_string = "margin: 0 0 0 0;";
 						}
-            echo '<ul style="text-align:right; list-style: none; ' . $margin_string .' width: ' . $CFG->slideshow_maxwidth . 'px"><li><a target="popup" href="?id='
+            echo '<ul id="slideshowul"><li><a target="popup" href="?id='
                 .($cm->id)."&autoshow=1\" onclick=\"return openpopup('/mod/slideshow/view.php?id="
                 .($cm->id)."&autoshow=1', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=$popwidth,height=$popheight', 0);\">"
                 .get_string('autopopup','slideshow')."</a></li>";
@@ -291,8 +513,11 @@
             echo '<p align="center"><a href="?id='.($cm->id).'&img_num='.fmod($img_count+$img_num-1,$img_count).'&autoshow='.$autoshow."\">&lt;&lt;</a>";
             if (!$pause){
                 echo '<a href="?id='.($cm->id).'&img_num='.$img_num.'&autoshow='.$autoshow."&pause=1\">||</a>";
-                echo '<meta http-equiv="Refresh" content="'.$autodelay.'; url=?id='
-                    .($cm->id).'&img_num='.fmod($img_num+1,$img_count)."&autoshow=1\">";
+				if(!$use_js)
+				{
+	                echo '<meta http-equiv="Refresh" content="'.$autodelay.'0000; url=?id='
+	                    .($cm->id).'&img_num='.fmod($img_num+1,$img_count)."&autoshow=1\">";
+				}
             } else {
                 echo "||";
             }
